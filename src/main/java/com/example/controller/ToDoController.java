@@ -1,53 +1,63 @@
 package com.example.controller;
 
-
-import java.util.List;
-
+import com.example.entity.ToDo;
+import com.example.entity.ToDoUser;
+import com.example.service.ToDoService;
+import com.example.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
-import com.example.service.ToDoService;
-import com.example.entity.ToDo;
+import jakarta.servlet.http.HttpSession;
+import java.util.List;
 
-
-@RestController
+@Controller
+@RequestMapping("/list")
 public class ToDoController {
-	
+
 	@Autowired
-	ToDoService service;
-	
-	@GetMapping("/list")
-	public List<ToDo> getList(){
-		return service.getList();
+	private ToDoService todoService;
+
+	@Autowired
+	private UserService userService;
+
+	@GetMapping
+	public String getList(Model model, HttpSession session) {
+		ToDoUser user = (ToDoUser) session.getAttribute("currentUser");
+		if (user == null) {
+			return "redirect:/login"; // Redirect to login if user is not found
+		}
+
+		List<ToDo> todos = todoService.getTodosByUser(user);
+		model.addAttribute("todos", todos);
+		return "todos";
 	}
-	
-	@GetMapping("/list/{id}")
-	public ToDo getListById(@PathVariable int id){
-		return service.getListById(id);
-	} 
-	
-	
-	@PostMapping("/list/add")
-	public void addTask(@RequestBody ToDo task) {
-		service.addTask(task);
+
+	@PostMapping("/add")
+	public String addTask(@RequestParam String content, HttpSession session) {
+		ToDoUser user = (ToDoUser) session.getAttribute("currentUser");
+		if (user == null) {
+			return "redirect:/login";
+		}
+
+		ToDo task = new ToDo();
+		task.setContent(content);
+		task.setStatus(Boolean.FALSE);
+		task.setUser(user);
+		todoService.addTask(task);
+		return "redirect:/todos";
 	}
-	
-	@DeleteMapping("/list/remove/{id}")
-	public void removeTask(@PathVariable int id){
-		service.delete(id);
+
+	@PostMapping("/update")
+	public String updateTask(@RequestParam Long id, @RequestParam String content, @RequestParam Boolean status) {
+		todoService.updateTask(id, content, status); // Update method adjusted accordingly
+		return "redirect:/todos";  // Redirect to the list view
 	}
-	
-	@PutMapping("/list/update")
-	public void updateList(@RequestBody ToDo task) {
-		service.updateTask(task);
+
+	@GetMapping("/remove/{id}")
+	public String removeTask(@PathVariable Long id) {
+		todoService.deleteTask(id);
+		return "redirect:/todos";
 	}
-	
-} 
+}

@@ -1,10 +1,6 @@
 package com.example.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table
@@ -15,16 +11,21 @@ public class ToDo {
 	private Long id;
 	private String content;
 	private Boolean status=Boolean.FALSE;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private ToDoUser user;  // Reference to the User entity
+
 	public ToDo() {
 	}
-	
-	public ToDo(Long id, String content, Boolean status) {
-		super();
+
+	public ToDo(Long id, String content, Boolean status, ToDoUser user) {
 		this.id = id;
 		this.content = content;
 		this.status = status;
+		this.user = user;
 	}
+
 	public Long getId() {
 		return id;
 	}
@@ -42,6 +43,13 @@ public class ToDo {
 	}
 	public void setStatus(Boolean status) {
 		this.status = status;
-	} 
-	
+	}
+
+	public ToDoUser getUser() {
+		return user;
+	}
+
+	public void setUser(ToDoUser user) {
+		this.user = user;
+	}
 }
