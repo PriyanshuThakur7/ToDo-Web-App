@@ -64,5 +64,12 @@ public class AuthController {
 		model.addAttribute("currentUser", user);
 		return "todos"; // Return the todos.html template
 	}
+
+	@PostMapping("/logout")
+	public String logout(HttpSession session) {
+		session.invalidate(); // Invalidate the session
+		return "redirect:/login"; // Redirect to login page
+	}
+
 }
    
