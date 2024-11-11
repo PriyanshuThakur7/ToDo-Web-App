@@ -6,6 +6,9 @@
 </head>
 <body>
 <h2>Register</h2>
+<div th:if="${error != null}" style="color: red; font-weight: bold;">
+  <p th:text="${error}"></p>
+</div>
 <form th:action="@{/register}" th:object="${user}" method="post">
   <div>
     <label for="username">Username:</label>
@@ -18,6 +21,7 @@
   <div>
     <button type="submit">Register</button>
   </div>
+
 </form>
 <a href="/login">Already have an account? Login here</a>
 </body>

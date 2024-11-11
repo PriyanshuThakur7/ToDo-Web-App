@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface UserRepo extends JpaRepository<ToDoUser,Long> {
     ToDoUser findByUsername(String username);
+
 }

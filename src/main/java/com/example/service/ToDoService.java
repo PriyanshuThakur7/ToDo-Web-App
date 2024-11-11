@@ -1,5 +1,6 @@
 package com.example.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,10 +18,6 @@ public class ToDoService {
 	@Autowired
 	TodoRepo repo;
 
-	public List<ToDo> getTodosByUser(ToDoUser user) {
-		return repo.findByUser(user);
-	}
-
 	public void addTask(ToDo task) {
 		repo.save(task);
 	}
@@ -30,13 +27,18 @@ public class ToDoService {
 		repo.deleteById(id);
 	}
 
-	public void updateTask(Long id, String newContent, Boolean newStatus) {
+	public void updateTask(Long id, String newContent, Boolean newStatus, LocalDateTime dueDate) {
 		Optional<ToDo> optionalTask = repo.findById(id);
 		if (optionalTask.isPresent()) {
 			ToDo task = optionalTask.get();
 			task.setContent(newContent);
 			task.setStatus(newStatus);
+			task.setDueDate(dueDate);
 			repo.save(task);
 		}
+	}
+
+	public List<ToDo> getTodosByUserAndStatus(ToDoUser user, boolean status) {
+		return repo.findByUserAndStatus(user, status); // Assuming you have this query method in your repository
 	}
 }

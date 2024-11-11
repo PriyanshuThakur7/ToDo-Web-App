@@ -11,6 +11,11 @@ public class UserService {
     @Autowired
     UserRepo repo;
 
+    public boolean userExists(String username) {
+        ToDoUser user=repo.findByUsername(username);
+        return user != null;
+    }
+
     public void registerNewUser(ToDoUser user) {
         repo.save(user);
     }
